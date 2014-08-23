@@ -1,6 +1,7 @@
 #include "HolePunchServer.h"
 
-HolePunchServer::HolePunchServer(void){
+HolePunchServer::HolePunchServer(int _port):
+	port(_port){
 
 }
 

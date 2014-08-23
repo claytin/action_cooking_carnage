@@ -4,10 +4,12 @@
 class HolePunchServer{
 
 public:
-	HolePunchServer(void);
+	HolePunchServer(int _port);
 	~HolePunchServer(void);
 	void start(void);
 
+private:
+	int port;
 };
 
 #endif
