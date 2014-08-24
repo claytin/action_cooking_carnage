@@ -1,6 +1,6 @@
 CC = ccache g++ -g -Wall
 CFLAGS = -I./
-LIBS = -lboost_system -lboost_program_options
+LIBS = -lboost_system -lboost_program_options -pthread
 
 CLIENT_TARGET = client
 SERVER_TARGET = server
