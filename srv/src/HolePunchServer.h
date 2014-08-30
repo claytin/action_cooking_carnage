@@ -1,6 +1,11 @@
 #ifndef HOLEPUNCHSERVER_H
 #define HOLEPUNCHSERVER_H
 
+#include <iostream>
+#include <boost/asio.hpp>
+
+using boost::asio::ip::udp;
+
 class HolePunchServer{
 
 public:

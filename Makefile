@@ -1,4 +1,4 @@
-CC = ccache g++ -g -Wall
+CC = ccache g++ -g -Wall -std=c++11
 CFLAGS = -I./
 LIBS = -lboost_system -lboost_program_options -pthread
 

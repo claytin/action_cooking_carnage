@@ -2,6 +2,10 @@
 #define CLIENT_H
 
 #include <string>
+#include <iostream>
+#include <boost/asio.hpp>
+
+using boost::asio::ip::udp;
 
 class Client{
 
