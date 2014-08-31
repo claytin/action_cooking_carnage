@@ -29,7 +29,8 @@ void HolePunchServer::listenForClients(){
 	for(unsigned int i = 0; i < buffer.size(); i++){
 		std::cout << buffer.at(i);
 	}
-	std::cout << "\" from: " << sender_endpoint.address() << std::endl;
+	std::cout << "\" from: " << sender_endpoint.address() << "@"
+		<< sender_endpoint.port()  << std::endl;
 
 	//check if client already exists
 	Client *curClient = findClient(sender_endpoint.address().to_string());
