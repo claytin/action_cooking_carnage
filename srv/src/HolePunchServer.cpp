@@ -34,48 +34,57 @@ void HolePunchServer::listenForClients(){
 	//check if client already exists
 	Client *curClient = findClient(sender_endpoint.address().to_string());
 
-	if(curClient == NULL){
-		//if it's a new client
-		std::cout << "new client" << std::endl;
-		curClient = new Client;
-		curClient->state = initial;
-		curClient->endpoint = &sender_endpoint;
-		curClient->address = sender_endpoint.address().to_string();
-		clients.push_back(curClient);
+	//char vectore or message string
+	std::string message(buffer.begin(), buffer.end());
 
-		//make sure it's following the protocol (starts with 'hey')
-		if(buffer.at(0) == 'h' && buffer.at(1) == 'e' && buffer.at(2) == 'y'){
-			socket->send_to(boost::asio::buffer("?v"),
-				sender_endpoint);
-			curClient->state = getVersion;
-		}else{
-			//if it doesn't then remove it
-			socket->send_to(boost::asio::buffer("sorry bro... wrong protocol"),
-				sender_endpoint);
-			clients.erase(std::remove(clients.begin(), clients.end(),
-				curClient), clients.end());
-		}
+	if(curClient == NULL){
+		//time to create a new client
+		addClient(&sender_endpoint, message);
 	}else{
-		if(curClient->state == getVersion){
-			if(buffer.at(0) == 'v' && buffer.at(1) == ':'){
-				
-			}else{
-				clientError("hmmmm... that's not how version strings look",
-					curClient);
-			}
-		}
+		handleClient(curClient, message);
 	}
 }
-void HolePunchServer::addClient(Client *client, std::string message){
+void HolePunchServer::addClient(udp::endpoint *endpoint, std::string message){
+	std::cout << "new client" << std::endl;
+	Client *client = new Client;
+	client->state = initial;
+	client->endpoint = endpoint;
+	client->address = endpoint->address().to_string();
+	clients.push_back(client);
+
+	//make sure it's following the protocol (starts with 'hey')
+	if(message[0] == 'h' && message[1] == 'e' && message[2] == 'y'){
+		socket->send_to(boost::asio::buffer("?v"),
+			*endpoint);
+		client->state = getVersion;
+	}else{
+		//if it doesn't then kill it
+		clientError("sorry bro... wrong protocol", client);
+	}
 
 }
 
 void HolePunchServer::handleClient(Client *client, std::string message){
-
+	if(client->state == getVersion){
+		//should be getting version info
+		if(message.length() > 2 && message[0] == 'v' && message[1] == ':'){
+			//make sure the version are the same
+			std::cout << message.substr(2, -1).compare(VERSION_STRING) << std::endl;
+			if(!message.substr(2, -1).compare(VERSION_STRING)){
+				std::cout << "yep" << std::endl;
+				clientError("nice version bro", client);
+			}else{
+				clientError("ur version number isn't right", client);
+			}
+		}else{
+			clientError("hmmmm... that's not how version strings look", client);
+		}
+	}
 }
 
 void HolePunchServer::clientError(std::string message, Client *client){
-	socket->send_to(boost::asio::buffer("!" + message), *client->endpoint);
+	socket->send_to(boost::asio::buffer("!" + message +
+		"\nclosing connetion (as if there ever was one)"), *client->endpoint);
 	removeClient(client);
 }
 

@@ -4,6 +4,8 @@
 #include <iostream>
 #include <boost/asio.hpp>
 
+#include "config.h"
+
 using boost::asio::ip::udp;
 
 class HolePunchServer{
@@ -29,7 +31,7 @@ private:
 	Client* findClient(std::string address);
 	void removeClient(Client *client);
 	void clientError(std::string errorMessage, Client *client);
-	void addClient(Client *client, std::string message);
+	void addClient(udp::endpoint *endpoint, std::string message);
 	void handleClient(Client *client, std::string message);
 
 	udp::socket *socket;
