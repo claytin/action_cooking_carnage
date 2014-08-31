@@ -4,3 +4,6 @@
 
 //port to work on
 #define PORT 2048
+
+//version number
+#define VERSION_STRING "0.0.1"
