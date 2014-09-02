@@ -12,31 +12,37 @@ Client::~Client(void){
 
 void Client::start(void){
 	try{
+		//create stocket and stuff
 		boost::asio::io_service io_service;
 
-		udp::socket s(io_service, udp::endpoint(udp::v4(), 0));
+		socket = new udp::socket(io_service, udp::endpoint(udp::v4(), 0));
 
 		udp::resolver resolver(io_service);
 		udp::resolver::query query(udp::v4(), HolePunchHostName, "2048");
-		udp::resolver::iterator iterator = resolver.resolve(query);
+		iterator = resolver.resolve(query);
 
-		//char request[1024];
-		std::cout << "Enter message: " << std::endl;
-		std::string request;
-		std::cin >> request;
-		std::cout << "requesting: " << request << std::endl;
-
-		size_t request_length = request.length();
-		s.send_to(boost::asio::buffer(request, request_length), *iterator);
-
-		char reply[1024];
-		udp::endpoint sender_endpoint;
-		size_t reply_length = s.receive_from(
-			boost::asio::buffer(reply, 1024), sender_endpoint);
-		std::cout << "Reply is: ";
-		std::cout.write(reply, reply_length);
-		std::cout << "\n";
+		//start handshake with hole punch server
+		handshake();
 	}catch (std::exception& e){
 		std::cerr << "Exception: " << e.what() << "\n";
 	}
+}
+
+void Client::handshake(void) throw(std::exception){
+	//start handshake with 'hey'
+	std::cout << "establishing connection..." << std::endl;
+	std::string request = "hey";
+
+	size_t request_length = request.length();
+	socket->send_to(boost::asio::buffer(request, request_length), *iterator);
+
+	char reply[1024];
+	udp::endpoint sender_endpoint;
+	size_t reply_length = socket->receive_from(
+		boost::asio::buffer(reply, 1024), sender_endpoint);
+	std::cout.write(reply, reply_length);
+}
+
+void Client::parseMesg(std::string mesg){
+	std::cout << mesg << std::endl;
 }
